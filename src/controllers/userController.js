@@ -50,6 +50,7 @@ exports.updateUser = async (req, res, next) => {
       });
     }
   } catch (error) {
+    console.log(error)
     next(
       new HttpException(error.message)
     );
@@ -108,9 +109,9 @@ exports.getAuthUser = async (req, res, next) => {
 };
 
 //..Endpoint to authenticate all users in the database
-exports.getAllUsers = async (req, res, next) => {
+exports.getUsers = async (req, res, next) => {
   try {
-    const users = await prisma.user.getUsers({});
+    const users = await prisma.user.findMany({});
     res.status(200).json({
       users,
     });

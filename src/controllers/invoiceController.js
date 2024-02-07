@@ -44,17 +44,7 @@ exports.createInvoice = async (req, res, next) => {
     try {
       const invoices = await prisma.invoice.findMany({
         include: {
-          descreption: {
-            select: {
-              id: true,
-              amount: {
-                select: {
-                  userId: true,
-                  name: true,
-                },
-              },
-            },
-          },
+      user:true
         },
       });
 

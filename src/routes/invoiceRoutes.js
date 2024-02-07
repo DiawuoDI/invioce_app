@@ -6,7 +6,7 @@ const invoiceController = require("../controllers/invoiceController");
 
 invoiceRouter.route('/')
     .post(invoiceController.createInvoice)
-    .get(invoiceController.getAllInvoice)
+    .get(invoiceController.getAllInvoices)
     
 invoiceRouter.route('/:id')
     .get( invoiceController.getInvoice)

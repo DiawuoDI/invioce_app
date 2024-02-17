@@ -76,7 +76,7 @@ exports.login = async (req, res, next) => {
     }
   } catch (error) {
     next(
-      new HttpException(error.message)
+      // new HttpException(error.message)
     );
   }
 };

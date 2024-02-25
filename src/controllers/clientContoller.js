@@ -1,16 +1,16 @@
 const prisma = require('../utils/prismaUtil');
 const HttpException = require('../utils/http-exception');
 
-//Create a new invoice into the database
-exports.createInvoice = async (req, res, next) => {
+//Create a new Client into the database
+exports.createClient = async (req, res, next) => {
     const data = req.body;
     try {
-      const invoice = await prisma.invoice.create({
+      const client = await prisma.client.create({
         data,
       });
       res.status(201).json({
         status: "success",
-        invoice,
+        client,
       });
     } catch (error) {
       console.log("error:", error.message);
@@ -18,12 +18,12 @@ exports.createInvoice = async (req, res, next) => {
     }
   };
   
-  //Check if inoice with the given id exist and update
-  exports.updateInvoice = async (req, res, next) => {
+  //Check if client with the given id exist and update
+  exports.updateClient = async (req, res, next) => {
     const { id } = req.params.id;
     const data = req.body;
     try {
-      const invoice = await prisma.invoice.update({
+      const client = await prisma.client.update({
         where: {
           id: parseInt(id),
         },
@@ -31,7 +31,7 @@ exports.createInvoice = async (req, res, next) => {
       });
       res.status(201).json({
         status: "success",
-        invoice,
+        client,
       });
     } catch (error) {
       console.log(error.message);
@@ -39,18 +39,14 @@ exports.createInvoice = async (req, res, next) => {
     }
   };
   
-  //Get all invoices
-  exports.getAllInvoices = async (req, res, next) => {
+  //Get all clients
+  exports.getAllClients = async (req, res, next) => {
     try {
-      const invoices = await prisma.invoice.findMany({
-        include: {
-      user:true
-        },
-      });
+      const clients = await prisma.client.findMany({});
 
       res.status(200).json({
         status: "success",
-        invoices,
+        clients,
       });
     } catch (error) {
       console.log(error.message);
@@ -58,16 +54,16 @@ exports.createInvoice = async (req, res, next) => {
     }
   };
   
-  //get a single course
-  exports.getInvoice = async (req, res, next) => {
+  //get a single client
+  exports.getClient = async (req, res, next) => {
     const { id } = req.params.id;
     try {
-      const invoice = await prisma.invoice.findUnique({
+      const client = await prisma.client.findUnique({
         where: { id: parseInt(id) },
       });
       res.status(200).json({
         status: "success",
-        invoice,
+        client,
       });
     } catch (error) {
       console.log(error.message);
@@ -75,14 +71,14 @@ exports.createInvoice = async (req, res, next) => {
     }
   };
   
-  //check if course with id and delete
-  exports.deleteInvoice = async (req, res, next) => {
+  //check if Client with id and delete
+  exports.deleteClient = async (req, res, next) => {
     try {
         const { id } = req.params.id 
-        const invoice = await prisma.invoice.findByIdAndDelete({});
+        const client = await prisma.client.findByIdAndDelete({});
       
-        if (!invoice) {
-          const error = new HttpException("Invoice with this ID not found!", 404);
+        if (!client) {
+          const error = new HttpException("Client with this ID not found!", 404);
           return next(error);
         }
       

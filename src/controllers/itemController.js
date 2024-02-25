@@ -1,16 +1,16 @@
 const prisma = require('../utils/prismaUtil');
 const HttpException = require('../utils/http-exception');
 
-//Create a new invoice into the database
-exports.createInvoice = async (req, res, next) => {
+//Create a new iten into the database
+exports.createItem = async (req, res, next) => {
     const data = req.body;
     try {
-      const invoice = await prisma.invoice.create({
+      const item = await prisma.item.create({
         data,
       });
       res.status(201).json({
         status: "success",
-        invoice,
+        item,
       });
     } catch (error) {
       console.log("error:", error.message);
@@ -19,11 +19,11 @@ exports.createInvoice = async (req, res, next) => {
   };
   
   //Check if inoice with the given id exist and update
-  exports.updateInvoice = async (req, res, next) => {
+  exports.updateItem = async (req, res, next) => {
     const { id } = req.params.id;
     const data = req.body;
     try {
-      const invoice = await prisma.invoice.update({
+      const item = await prisma.item.update({
         where: {
           id: parseInt(id),
         },
@@ -31,7 +31,7 @@ exports.createInvoice = async (req, res, next) => {
       });
       res.status(201).json({
         status: "success",
-        invoice,
+        item,
       });
     } catch (error) {
       console.log(error.message);
@@ -40,17 +40,13 @@ exports.createInvoice = async (req, res, next) => {
   };
   
   //Get all invoices
-  exports.getAllInvoices = async (req, res, next) => {
+  exports.getAllItems = async (req, res, next) => {
     try {
-      const invoices = await prisma.invoice.findMany({
-        include: {
-      user:true
-        },
-      });
+      const items = await prisma.item.findMany({});
 
       res.status(200).json({
         status: "success",
-        invoices,
+        items,
       });
     } catch (error) {
       console.log(error.message);
@@ -58,16 +54,16 @@ exports.createInvoice = async (req, res, next) => {
     }
   };
   
-  //get a single course
-  exports.getInvoice = async (req, res, next) => {
+  //get a single Item
+  exports.getItem = async (req, res, next) => {
     const { id } = req.params.id;
     try {
-      const invoice = await prisma.invoice.findUnique({
+      const item = await prisma.item.findUnique({
         where: { id: parseInt(id) },
       });
       res.status(200).json({
         status: "success",
-        invoice,
+        item,
       });
     } catch (error) {
       console.log(error.message);
@@ -75,14 +71,14 @@ exports.createInvoice = async (req, res, next) => {
     }
   };
   
-  //check if course with id and delete
-  exports.deleteInvoice = async (req, res, next) => {
+  //check if Item with id and delete
+  exports.deleteItem = async (req, res, next) => {
     try {
         const { id } = req.params.id 
-        const invoice = await prisma.invoice.findByIdAndDelete({});
+        const item = await prisma.item.findByIdAndDelete({});
       
-        if (!invoice) {
-          const error = new HttpException("Invoice with this ID not found!", 404);
+        if (!item) {
+          const error = new HttpException("Item with this ID not found!", 404);
           return next(error);
         }
       

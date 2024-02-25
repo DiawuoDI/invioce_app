@@ -3,6 +3,7 @@ const passwordUtil = require('../utils/passwordUtil');
 const HttpException = require('../utils/http-exception');
 const tokenUtil = require('../utils/tokenUtil');
 const moment = require('moment');
+const bcrypt = require('bcrypt');
 
 //creating a new user by signing up request
 exports.signup = async(req,res, next) => {
@@ -20,6 +21,7 @@ exports.signup = async(req,res, next) => {
         }
     });
       } catch (error) {
+        console.log(error)
          next(new HttpException(422, error.message));
   }
 };
@@ -59,24 +61,33 @@ exports.updateUser = async (req, res, next) => {
 
 // logging in a user who is already in the database
 exports.login = async (req, res, next) => {
-  const { email, password } = req.body;
+  const { email, password: userInputPassword } = req.body; // Rename password variable to userInputPassword
   try {
-    const emailValidated = await validateEmail(email);
-    const user = await validateConfirmed(emailValidated?.email);
-    const valid = await validatePwd(password, user?.password || "");
-
-    if (valid === true || valid === "true") {
-      const token = tokenUtil.signToken(user);
-      res.header("Authorization", token);
-      res.status(201).json({
-        status: "success",
-        token,
-        userId: user.id,
-      });
+    const user = await prisma.user.findUnique({
+      where: {
+        email
+      }
+    })
+    if (!user) {
+      throw new HttpException(404, "User not found")
+    } else {
+      const passwordMatch = await bcrypt.compare(userInputPassword, user.password); // Rename password to passwordMatch
+      if (!passwordMatch) {
+        // throw new HttpException("Invalid Password", 404)
+      } else {
+        const token = tokenUtil.signToken(user);
+        res.header("Authorization", token);
+        res.status(201).json({
+          status: "success",
+          token,
+          userId: user.id,
+        });
+      }
     }
   } catch (error) {
+    console.log(error)
     next(
-      // new HttpException(error.message)
+      new HttpException('Please enter email & password!', 400)
     );
   }
 };
@@ -91,6 +102,7 @@ exports.logout = async (req, res, next) => {
       message: "logged out",
     });
   } catch (error) {
+    console.log(error)
     next(new HttpException, error.message);
   }
 };
@@ -116,6 +128,7 @@ exports.getUsers = async (req, res, next) => {
       users,
     });
   } catch (error) {
+    console.log(error)
     next(new HttpException(404, error.message));
   }
 };
@@ -134,6 +147,7 @@ exports.deleteUser = async (req, res, next) => {
       user,
     });
   } catch (error) {
+    console.log(error)
     next(new HttpException, error.message);
   }
 };
@@ -165,6 +179,7 @@ exports.forgetPassword = async (req, res, next) => {
       });
     }
   } catch (error) {
+    console.log(error)
     next(new HttpException, error.message);
   }
 };
@@ -196,6 +211,7 @@ exports.verifyToken = async (req, res, next) => {
       });
     }
   } catch (error) {
+    console.log(error)
     next(new HttpException, error.message);
   }
 };
@@ -229,6 +245,7 @@ exports.resetPassword = async (req, res, next) => {
       });
     }
   } catch (error) {
+        console.log(error)
     next(new HttpException, error.message);
   }
 };

@@ -11,24 +11,54 @@ datasource db {
 }
 
 model User {
-  id          String    @id @default(uuid())
-  name        String
-  email       String    @unique
-  password    String?
-  phoneNumber String?
-  invoices    Invoice[] // Define the one-to-many relationship 
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id            String    @id @default(uuid())
+  name          String
+  email         String    @unique
+  password      String?
+  phoneNumber   String?
+  streetAddress String
+  city          String
+  postCode      String
+  country       String
+  invoice       Invoice[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 model Invoice {
-  id          String   @id @default(uuid())
-  description String
-  amount      Float
-  code        Int  @default(0)
-  status      String
-  userId      String // Add a foreign key to reference User 
-  user        User     @relation(fields: [userId], references: [id]) // Establish the relationship 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                 String   @id @default(uuid())
+  User               User?    @relation(fields: [billFrom], references: [id])
+  billFrom           String?
+  client             client?  @relation(fields: [billTo], references: [id])
+  billTo             String?
+  invoiceDate        DateTime @default(now())
+  paymentTerms       String
+  projectDescription String
+  itemList           item[]
+  updatedAt          DateTime @updatedAt
+}
+
+model client {
+  id            String    @id @default(uuid())
+  clientName    String
+  clientEmail   String
+  streetAddress String
+  city          String
+  postCode      String
+  country       String
+  invoice       Invoice[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model item {
+  id           String   @id @default(uuid())
+  Invoice      Invoice? @relation(fields: [invoiceId], references: [id])
+  invoiceId    String?
+  itemName     String
+  itemQuantity Int      @default(1)
+  price        Float    @default(0.00)
+  total        Float    @default(0.00)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }

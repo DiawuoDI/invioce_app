@@ -20,12 +20,12 @@ exports.createInvoice = async (req, res, next) => {
   
   //Check if inoice with the given id exist and update
   exports.updateInvoice = async (req, res, next) => {
-    const { id } = req.params.id;
+    const { id } = req.params;
     const data = req.body;
     try {
       const invoice = await prisma.invoice.update({
         where: {
-          id: parseInt(id),
+          id
         },
         data,
       });
@@ -44,7 +44,7 @@ exports.createInvoice = async (req, res, next) => {
     try {
       const invoices = await prisma.invoice.findMany({
         include: {
-      user:true
+      User:true
         },
       });
 
@@ -79,7 +79,11 @@ exports.createInvoice = async (req, res, next) => {
   exports.deleteInvoice = async (req, res, next) => {
     try {
         const { id } = req.params.id 
-        const invoice = await prisma.invoice.findByIdAndDelete({});
+        const invoice = await prisma.invoice.delete({
+          where:{
+            id
+          }
+        });
       
         if (!invoice) {
           const error = new HttpException("Invoice with this ID not found!", 404);

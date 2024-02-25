@@ -1,5 +1,5 @@
-const prisma = require('../utils/prismaUtil');
 const HttpException = require('../utils/http-exception');
+const prisma = require('../utils/prismaUtil');
 
 //Create a new Client into the database
 exports.createClient = async (req, res, next) => {
@@ -20,12 +20,12 @@ exports.createClient = async (req, res, next) => {
   
   //Check if client with the given id exist and update
   exports.updateClient = async (req, res, next) => {
-    const { id } = req.params.id;
+    const { id } = req.params;
     const data = req.body;
     try {
       const client = await prisma.client.update({
         where: {
-          id: parseInt(id),
+          id
         },
         data,
       });
@@ -56,10 +56,12 @@ exports.createClient = async (req, res, next) => {
   
   //get a single client
   exports.getClient = async (req, res, next) => {
-    const { id } = req.params.id;
+    const { id } = req.params;
     try {
       const client = await prisma.client.findUnique({
-        where: { id: parseInt(id) },
+        where: { 
+          id
+        },
       });
       res.status(200).json({
         status: "success",
@@ -75,7 +77,11 @@ exports.createClient = async (req, res, next) => {
   exports.deleteClient = async (req, res, next) => {
     try {
         const { id } = req.params.id 
-        const client = await prisma.client.findByIdAndDelete({});
+        const client = await prisma.client.delete({
+          where:{
+            id
+          }
+        });
       
         if (!client) {
           const error = new HttpException("Client with this ID not found!", 404);

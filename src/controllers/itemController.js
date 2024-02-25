@@ -20,12 +20,12 @@ exports.createItem = async (req, res, next) => {
   
   //Check if inoice with the given id exist and update
   exports.updateItem = async (req, res, next) => {
-    const { id } = req.params.id;
+    const { id } = req.params;
     const data = req.body;
     try {
       const item = await prisma.item.update({
         where: {
-          id: parseInt(id),
+          id,
         },
         data,
       });
@@ -56,10 +56,12 @@ exports.createItem = async (req, res, next) => {
   
   //get a single Item
   exports.getItem = async (req, res, next) => {
-    const { id } = req.params.id;
+    const { id } = req.params;
     try {
       const item = await prisma.item.findUnique({
-        where: { id: parseInt(id) },
+        where: { 
+          id
+         },
       });
       res.status(200).json({
         status: "success",
@@ -74,8 +76,12 @@ exports.createItem = async (req, res, next) => {
   //check if Item with id and delete
   exports.deleteItem = async (req, res, next) => {
     try {
-        const { id } = req.params.id 
-        const item = await prisma.item.findByIdAndDelete({});
+        const { id } = req.params.id;
+        const item = await prisma.item.delete({
+          where:{
+            id
+          }
+        });
       
         if (!item) {
           const error = new HttpException("Item with this ID not found!", 404);

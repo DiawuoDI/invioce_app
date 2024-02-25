@@ -11,7 +11,7 @@ userRouter.post('/signUp', userController.signup);
 userRouter.patch('/:id', userController.updateUser);
 userRouter.get('/logout', userController.logout);
 userRouter.get('/findMany', userController.getUsers)
-userRouter.get('/auth/:id', authenticate, userController.getAuthUser);
+userRouter.get('/auth/:id', userController.getUser);
 userRouter.delete('/:id', userController.deleteUser);
 userRouter.post('/forget-password', userController.forgetPassword);
 userRouter.get('/:token/verify/:email', userController.verifyToken);

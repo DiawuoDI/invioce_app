@@ -8,7 +8,8 @@ const bcrypt = require('bcrypt');
 //creating a new user by signing up request
 exports.signup = async(req,res, next) => {
     try {
-        const data =req.body
+        let data =req.body
+        data.password = await bcrypt.hash(data.password,10);
     const user = await prisma.user.create({data});
     const token = tokenUtil.signToken(user.id);
 
@@ -61,19 +62,22 @@ exports.updateUser = async (req, res, next) => {
 
 // logging in a user who is already in the database
 exports.login = async (req, res, next) => {
-  const { email, password: userInputPassword } = req.body; // Rename password variable to userInputPassword
+  const { email, password } = req.body; 
+  // Rename password variable to userInputPassword
   try {
     const user = await prisma.user.findUnique({
       where: {
         email
       }
     })
+    
     if (!user) {
       throw new HttpException(404, "User not found")
     } else {
-      const passwordMatch = await bcrypt.compare(userInputPassword, user.password); // Rename password to passwordMatch
+      const passwordMatch = await bcrypt.compare(password, user.password);
+    // Rename password to passwordMatch
       if (!passwordMatch) {
-        // throw new HttpException("Invalid Password", 404)
+         throw new HttpException("Invalid Password", 404)
       } else {
         const token = tokenUtil.signToken(user);
         res.header("Authorization", token);
@@ -108,14 +112,19 @@ exports.logout = async (req, res, next) => {
 };
 
 // authenticating an existing user by Id
-exports.getAuthUser = async (req, res, next) => {
+exports.getUser = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const user = await prisma.user.findAuthUser(id);
+    const user = await prisma.user.findFirst({
+      where:{
+        id
+      }
+    });
 
     return res.status(200).json({ user });
   } catch (error) {
+    console.log(error)
     next(new HttpException, error.message);
   }
 };

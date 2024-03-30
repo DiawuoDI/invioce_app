@@ -60,10 +60,12 @@ exports.createInvoice = async (req, res, next) => {
   
   //get a single course
   exports.getInvoice = async (req, res, next) => {
-    const { id } = req.params.id;
+    const { id } = req.params;
     try {
       const invoice = await prisma.invoice.findUnique({
-        where: { id: parseInt(id) },
+        where: { 
+          id
+        },
       });
       res.status(200).json({
         status: "success",

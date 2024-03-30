@@ -21,6 +21,14 @@ app.use('/api/v1/item', itemRoute);
 app.use('/api/v1/client', clientRoute);
 
 
+app.use((err,req,res,next)=>{
+res.status(err.status || 500).json({
+    status:err.status||500,
+   error:err.message  
+});
+});
+
+
 app.listen(PORT, () => {
     console.log(`server is running on port ${PORT}`);
 })

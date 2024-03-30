@@ -10,17 +10,27 @@ exports.signup = async(req,res, next) => {
     try {
         let data =req.body
         data.password = await bcrypt.hash(data.password,10);
-    const user = await prisma.user.create({data});
-    const token = tokenUtil.signToken(user.id);
+        const checkUser = await prisma.user.findUnique({
+          where:{
+            email:data.email
+          }
+        })
+        if (checkUser){
+          throw new  HttpException(422, "User already registered");
+        }else{
+      const user = await prisma.user.create({data});
+      const token = tokenUtil.signToken(user.id);
 
-    // Handle any errors that might occur during user creation
-    res.status(201).json({
-        status: 'success',
-        token,
-        data: {
-            user: user,
-        }
-    });
+      // Handle any errors that might occur during user creation
+      res.status(201).json({
+          status: 'success',
+          token,
+          data: {
+              user: user,
+          }
+        });
+    }
+   
       } catch (error) {
         console.log(error)
          next(new HttpException(422, error.message));
